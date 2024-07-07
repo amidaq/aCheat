@@ -2,9 +2,7 @@ package ru.amidaku.acheat;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 import ru.amidaku.acheat.Commands.Commands;
-import ru.amidaku.acheat.Listeners.EffectListener;
 import ru.amidaku.acheat.Listeners.Listeners;
 
 import java.awt.*;
@@ -13,8 +11,9 @@ import java.util.Objects;
 public final class ACheat extends JavaPlugin {
 
 
+
     public boolean isCheat(Player player) {
-        return player.hasPermission("acheat.cheater");
+        return player.isPermissionSet("acheat.cheater");
     }
 
     @Override
@@ -25,6 +24,5 @@ public final class ACheat extends JavaPlugin {
         getServer().getConsoleSender().sendMessage(Color.GREEN + "|");
         Objects.requireNonNull(getCommand("acheat")).setExecutor(new Commands(this));
         getServer().getPluginManager().registerEvents(new Listeners(), this);
-        getServer().getPluginManager().registerEvents(new EffectListener(), this);
     }
 }

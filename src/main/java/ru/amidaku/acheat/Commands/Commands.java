@@ -6,9 +6,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import ru.amidaku.acheat.ACheat;
-import ru.amidaku.acheat.Listeners.EffectListener;
 
 
 public class Commands implements CommandExecutor {
@@ -32,7 +32,6 @@ public class Commands implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length == 1) {
             final Player player = Bukkit.getPlayer(args[0]);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/lp user " + player.getName() + " permission set acheat.cheater true");
             if (player == null){
                 sender.sendMessage(Color.RED + "Он оффлайн");
                 return true;
@@ -40,13 +39,26 @@ public class Commands implements CommandExecutor {
             if (!(player.equals(sender))) {
                 if (!(player.hasPermission("*"))) {
                     player.addPotionEffect(PotionEffectType.LEVITATION.createEffect(100, 1));
-                    Bukkit.getScheduler().runTaskLater(main, () -> {
-                        player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 250);
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(main, () -> {
+                        for (double i = 0; i <= Math.PI; i += Math.PI / 10) {
+                            double radius = Math.sin(i) * 3;
+                            double y = Math.cos(i) * 3 + 1;
+                            for (double a = 0; a < Math.PI * 2; a += Math.PI / 10) {
+                                double x = Math.cos(a) * radius;
+                                double z = Math.sin(a) * radius;
+                                Location loc = player.getLocation();
+                                loc.add(x, y, z);
+                                loc.getWorld().spawnParticle(Particle.DOLPHIN, loc, 5);
+                                loc.subtract(x, y, z);
+                            }
+                        }
+                    }, 90L);
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(main, () -> {
+                        player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 200);
                         player.setHealth(0.0);
                         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 10);
-//                        Bukkit.dispatchCommand(sender, commande + player.getName() + send + sender.getName() + time + reason);
+                        Bukkit.dispatchCommand(sender, commande + player.getName() + send + sender.getName() + time + reason);
                         Bukkit.getScheduler().cancelTasks(main);
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/lp user " + player.getName() + " permission set acheat.cheater false");
                     }, 100L);
 
                 }

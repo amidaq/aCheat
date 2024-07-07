@@ -6,3 +6,4 @@ softdepend: [LiteBans]
 commands:
   acheat:
     permission: acheat.use
+
