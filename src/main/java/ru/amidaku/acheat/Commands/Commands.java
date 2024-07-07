@@ -6,7 +6,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import ru.amidaku.acheat.ACheat;
 
@@ -48,12 +47,12 @@ public class Commands implements CommandExecutor {
                                 double z = Math.sin(a) * radius;
                                 Location loc = player.getLocation();
                                 loc.add(x, y, z);
-                                loc.getWorld().spawnParticle(Particle.DOLPHIN, loc, 5);
+                                loc.getWorld().spawnParticle(Particle.DOLPHIN, loc, 20);
                                 loc.subtract(x, y, z);
                             }
                         }
                     }, 90L);
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(main, () -> {
+                    Bukkit.getScheduler().runTaskLater(main, () -> {
                         player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 200);
                         player.setHealth(0.0);
                         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 10);

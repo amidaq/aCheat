@@ -8,11 +8,9 @@ import ru.amidaku.acheat.ACheat;
 
 public class Listeners implements Listener {
 
-    private ACheat main;
-
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e){
-        if (e.getEntity() instanceof Player && main.isCheat((Player) e.getEntity())){
+        if (e.getEntity() instanceof Player){
             e.setCancelled(true);
         }
     }
