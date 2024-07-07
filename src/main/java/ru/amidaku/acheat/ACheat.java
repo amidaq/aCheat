@@ -1,6 +1,6 @@
 package ru.amidaku.acheat;
 
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import ru.amidaku.acheat.Commands.Commands;
@@ -12,10 +12,9 @@ import java.util.Objects;
 
 public final class ACheat extends JavaPlugin {
 
-    public boolean cheat = false;
 
-    public boolean isCheat(@NotNull Entity entity) {
-        return cheat;
+    public boolean isCheat(Player player) {
+        return player.hasPermission("acheat.cheater");
     }
 
     @Override

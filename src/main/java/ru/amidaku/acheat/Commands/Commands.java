@@ -32,7 +32,7 @@ public class Commands implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length == 1) {
             final Player player = Bukkit.getPlayer(args[0]);
-            main.cheat = true;
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/lp user " + player.getName() + " permission set acheat.cheater true");
             if (player == null){
                 sender.sendMessage(Color.RED + "Он оффлайн");
                 return true;
@@ -40,16 +40,13 @@ public class Commands implements CommandExecutor {
             if (!(player.equals(sender))) {
                 if (!(player.hasPermission("*"))) {
                     player.addPotionEffect(PotionEffectType.LEVITATION.createEffect(100, 1));
-                    Bukkit.getScheduler().runTaskTimer(main, () -> {
-                        new EffectListener();
-                    },0,20L);
                     Bukkit.getScheduler().runTaskLater(main, () -> {
                         player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 250);
                         player.setHealth(0.0);
                         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 10);
-                        Bukkit.dispatchCommand(sender, commande + player.getName() + send + sender.getName() + time + reason);
+//                        Bukkit.dispatchCommand(sender, commande + player.getName() + send + sender.getName() + time + reason);
                         Bukkit.getScheduler().cancelTasks(main);
-                        main.cheat = false;
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/lp user " + player.getName() + " permission set acheat.cheater false");
                     }, 100L);
 
                 }
