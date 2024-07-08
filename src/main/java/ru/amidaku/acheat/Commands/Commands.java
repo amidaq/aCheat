@@ -8,24 +8,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import ru.amidaku.acheat.ACheat;
+import ru.amidaku.acheat.Effects.EffectManager;
 
 
 public class Commands implements CommandExecutor {
 
-    private final ACheat main;
-
-    private String commande = "ipban ";
-    private final String send = " --sender=";
-
-    private final String reason = " 2.5";
-
-    private final String time = " 30d";
-
-
+    private ACheat main;
 
     public Commands(ACheat main) {
         this.main = main;
     }
+
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
@@ -35,40 +28,27 @@ public class Commands implements CommandExecutor {
                 sender.sendMessage(Color.RED + "Он оффлайн");
                 return true;
             }
-            if (!(player.equals(sender))) {
-                if (!(player.hasPermission("*"))) {
-                    player.addPotionEffect(PotionEffectType.LEVITATION.createEffect(100, 1));
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(main, () -> {
-                        for (double i = 0; i <= Math.PI; i += Math.PI / 10) {
-                            double radius = Math.sin(i) * 3;
-                            double y = Math.cos(i) * 3 + 1;
-                            for (double a = 0; a < Math.PI * 2; a += Math.PI / 10) {
-                                double x = Math.cos(a) * radius;
-                                double z = Math.sin(a) * radius;
-                                Location loc = player.getLocation();
-                                loc.add(x, y, z);
-                                loc.getWorld().spawnParticle(Particle.DOLPHIN, loc, 20);
-                                loc.subtract(x, y, z);
-                            }
-                        }
-                    }, 90L);
-                    Bukkit.getScheduler().runTaskLater(main, () -> {
-                        player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 200);
-                        player.setHealth(0.0);
-                        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 10);
-                        Bukkit.dispatchCommand(sender, commande + player.getName() + send + sender.getName() + time + reason);
-                        Bukkit.getScheduler().cancelTasks(main);
-                    }, 100L);
-
-                }
-                if (player.hasPermission("*")) {
-                    sender.sendMessage(ChatColor.RED + "Ты хочешь " + ChatColor.GREEN + player.getName() + ChatColor.RED + " вызвать?");
-                }
-            }else{
-                sender.sendMessage(ChatColor.RED + "Нельзя так с собой");
+            if (!(player.hasPermission("acheat.admin"))){
+                sender.sendMessage(ChatColor.RED + "Ты хочешь " + ChatColor.GREEN + player.getName() + ChatColor.RED + " вызвать?");
+                return true;
             }
-
-        } return false;
+            if (player.equals(sender)){
+                sender.sendMessage(ChatColor.RED + "Нельзя так с собой");
+                return true;
+            }
+            player.addPotionEffect(PotionEffectType.LEVITATION.createEffect(100, 1));
+            EffectManager.sphereEffect(player);
+            EffectManager.coneEffect(player);
+            Bukkit.getScheduler().runTaskLater(main, () -> {
+                player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 200);
+                player.setHealth(0.0);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 10);
+                Bukkit.dispatchCommand(sender, String.format("ipban %s 30d 2.5 —sender=%s", player.getName(), sender.getName()));
+                Bukkit.getScheduler().cancelTasks(main);
+                }, 100L);
+            sender.sendMessage(String.format(ChatColor.GREEN + "Игрок %s наказан", player.getName()));
+        }return false;
     }
 }
+
 
