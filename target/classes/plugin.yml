@@ -1,0 +1,9 @@
+name: aCheat
+version: '1.0-First'
+main: ru.amidaku.acheat.ACheat
+api-version: '1.16'
+softdepend: [LiteBans]
+commands:
+  acheat:
+    permission: acheat.use
+
