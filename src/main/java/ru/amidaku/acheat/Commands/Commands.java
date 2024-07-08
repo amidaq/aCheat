@@ -8,15 +8,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import ru.amidaku.acheat.ACheat;
-import ru.amidaku.acheat.Effects.EffectManager;
+
 
 
 public class Commands implements CommandExecutor {
 
-    private ACheat main;
+    private static ACheat main;
 
     public Commands(ACheat main) {
-        this.main = main;
+        Commands.main = main;
     }
 
 
@@ -28,7 +28,7 @@ public class Commands implements CommandExecutor {
                 sender.sendMessage(Color.RED + "Он оффлайн");
                 return true;
             }
-            if (!(player.hasPermission("acheat.admin"))){
+            if ((player.hasPermission("acheat.admin"))){
                 sender.sendMessage(ChatColor.RED + "Ты хочешь " + ChatColor.GREEN + player.getName() + ChatColor.RED + " вызвать?");
                 return true;
             }
@@ -37,18 +37,35 @@ public class Commands implements CommandExecutor {
                 return true;
             }
             player.addPotionEffect(PotionEffectType.LEVITATION.createEffect(100, 1));
-            EffectManager.sphereEffect(player);
-            EffectManager.coneEffect(player);
+            sphereEffect(player);
             Bukkit.getScheduler().runTaskLater(main, () -> {
-                player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 200);
+                player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 400);
                 player.setHealth(0.0);
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 10);
-                Bukkit.dispatchCommand(sender, String.format("ipban %s 30d 2.5 —sender=%s", player.getName(), sender.getName()));
+                Bukkit.dispatchCommand(sender, String.format("ipban %s 30d %s", player.getName(),main.getConfig().getString("reason")));
+                sender.sendMessage(String.format(ChatColor.GREEN + "Игрок %s наказан", player.getName()));
                 Bukkit.getScheduler().cancelTasks(main);
                 }, 100L);
-            sender.sendMessage(String.format(ChatColor.GREEN + "Игрок %s наказан", player.getName()));
         }return false;
     }
+    public static void sphereEffect(final Player player){
+        Bukkit.getScheduler().runTaskLaterAsynchronously(main, () -> {
+            for (double i = 0; i <= Math.PI; i += Math.PI / 10) {
+                double radius = Math.sin(i) * 3;
+                double y = Math.cos(i) * 3 + 1;
+                for (double a = 0; a < Math.PI * 2; a += Math.PI / 10) {
+                    double x = Math.cos(a) * radius;
+                    double z = Math.sin(a) * radius;
+                    Location loc = player.getLocation();
+                    loc.add(x, y, z);
+                    loc.getWorld().spawnParticle(Particle.DOLPHIN, loc, 20);
+                    loc.subtract(x, y, z);
+                }
+            }
+        }, 90L);
+    }
 }
+
+
 
 
