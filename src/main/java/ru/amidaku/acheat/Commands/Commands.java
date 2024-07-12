@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import ru.amidaku.acheat.ACheat;
 
 
-
 public class Commands implements CommandExecutor {
 
     private static ACheat main;
@@ -23,33 +22,35 @@ public class Commands implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length == 1) {
-            final Player player = Bukkit.getPlayer(args[0]);
-            if (player == null){
+            final Player cheater = Bukkit.getPlayer(args[0]);
+            if (cheater == null){
                 sender.sendMessage(Color.RED + "Он оффлайн");
                 return true;
             }
-            if ((player.hasPermission("acheat.admin"))){
-                sender.sendMessage(ChatColor.RED + "Ты хочешь " + ChatColor.GREEN + player.getName() + ChatColor.RED + " вызвать?");
+            if ((cheater.hasPermission("acheat.admin"))){
+                sender.sendMessage(ChatColor.RED + "Ты хочешь " + ChatColor.GREEN + cheater.getName() + ChatColor.RED + " вызвать?");
                 return true;
             }
-            if (player.equals(sender)){
+            if (cheater.equals(sender)){
                 sender.sendMessage(ChatColor.RED + "Нельзя так с собой");
                 return true;
             }
-            player.addPotionEffect(PotionEffectType.LEVITATION.createEffect(100, 1));
-            sphereEffect(player);
+            cheater.addPotionEffect(PotionEffectType.LEVITATION.createEffect(100, 1));
+            sphereEffect(cheater);
             Bukkit.getScheduler().runTaskLater(main, () -> {
-                player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 400);
-                player.setHealth(0.0);
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 10);
-                Bukkit.dispatchCommand(sender, String.format("ipban %s 30d %s", player.getName(),main.getConfig().getString("reason")));
-                sender.sendMessage(String.format(ChatColor.GREEN + "Игрок %s наказан", player.getName()));
+                cheater.getWorld().spawnParticle(Particle.FLAME, cheater.getLocation(), 400);
+                cheater.setHealth(0.0);
+                cheater.getWorld().playSound(cheater.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 10);
+                Bukkit.dispatchCommand(sender, String.format("ipban %s 30d 2.5 -s", cheater.getName()));
+                sender.sendMessage(String.format(ChatColor.GREEN + "Игрок %s наказан", cheater.getName()));
                 Bukkit.getScheduler().cancelTasks(main);
                 }, 100L);
+
         }return false;
     }
     public static void sphereEffect(final Player player){
-        Bukkit.getScheduler().runTaskLaterAsynchronously(main, () -> {
+        final Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(245, 76, 0), 0.5F);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(main, () -> {
             for (double i = 0; i <= Math.PI; i += Math.PI / 10) {
                 double radius = Math.sin(i) * 3;
                 double y = Math.cos(i) * 3 + 1;
@@ -58,11 +59,11 @@ public class Commands implements CommandExecutor {
                     double z = Math.sin(a) * radius;
                     Location loc = player.getLocation();
                     loc.add(x, y, z);
-                    loc.getWorld().spawnParticle(Particle.DOLPHIN, loc, 20);
+                    loc.getWorld().spawnParticle(Particle.REDSTONE, loc, 0, 0.0, 0.0, 0.0, dust);
                     loc.subtract(x, y, z);
                 }
             }
-        }, 90L);
+        }, 0, 1);
     }
 }
 

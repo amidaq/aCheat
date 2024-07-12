@@ -1,4 +1,0 @@
-command: "ipban"
-reason: "2.5"
-time: "30d"
-particle: "Particle.FLAME"

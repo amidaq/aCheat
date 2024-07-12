@@ -8,10 +8,11 @@ import java.util.Objects;
 
 public final class ACheat extends JavaPlugin {
 
+
+
     @Override
     public void onEnable() {
-        saveDefaultConfig();
-        getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "aCheat succsesful start");
+        getLogger().info(ChatColor.GREEN + "aCheat succsesful start");
         Objects.requireNonNull(getCommand("acheat")).setExecutor(new Commands(this));
     }
 }
